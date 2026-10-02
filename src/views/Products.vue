@@ -10,6 +10,17 @@
       placeholder="Rechercher un produit..."
     />
 
+    <select v-model="selectedCategory">
+      <option value="">Toutes les catégories</option>
+      <option
+        v-for="category in categories"
+        :key="category"
+        :value="category"
+      >
+        {{ category }}
+      </option>
+    </select>
+
     <section>
       <ProductCard
         v-for="product in filteredProducts"
@@ -30,10 +41,23 @@ import ProductCard from '../components/ProductCard.vue'
 import { products } from '../data/products.js'
 
 const search = ref('')
+const selectedCategory = ref('')
+
+const categories = computed(() => {
+  return [...new Set(products.map((product) => product.category))]
+})
 
 const filteredProducts = computed(() => {
-  return products.filter((product) =>
-    product.name.toLowerCase().includes(search.value.toLowerCase())
-  )
+  return products.filter((product) => {
+    const matchesSearch = product.name
+      .toLowerCase()
+      .includes(search.value.toLowerCase())
+
+    const matchesCategory =
+      selectedCategory.value === '' ||
+      product.category === selectedCategory.value
+
+    return matchesSearch && matchesCategory
+  })
 })
 </script>
