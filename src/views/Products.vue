@@ -12,6 +12,7 @@
 
     <select v-model="selectedCategory">
       <option value="">Toutes les catégories</option>
+
       <option
         v-for="category in categories"
         :key="category"
@@ -35,7 +36,15 @@
       min="0"
     />
 
-    <section>
+    <p v-if="loading">
+      Chargement des produits...
+    </p>
+
+    <p v-if="errorMessage">
+      {{ errorMessage }}
+    </p>
+
+    <section v-if="!loading && !errorMessage">
       <ProductCard
         v-for="product in filteredProducts"
         :key="product.id"
@@ -43,28 +52,32 @@
       />
     </section>
 
-    <p v-if="filteredProducts.length === 0">
+    <p v-if="!loading && !errorMessage && filteredProducts.length === 0">
       Aucun produit trouvé.
     </p>
   </main>
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import ProductCard from '../components/ProductCard.vue'
-import { products } from '../data/products.js'
+import { apiFetch } from '../services/api.js'
 
+const products = ref([])
 const search = ref('')
 const selectedCategory = ref('')
 const minPrice = ref(null)
 const maxPrice = ref(null)
 
+const loading = ref(false)
+const errorMessage = ref('')
+
 const categories = computed(() => {
-  return [...new Set(products.map((product) => product.category))]
+  return [...new Set(products.value.map((product) => product.category))]
 })
 
 const filteredProducts = computed(() => {
-  return products.filter((product) => {
+  return products.value.filter((product) => {
     const matchesSearch = product.name
       .toLowerCase()
       .includes(search.value.toLowerCase())
@@ -90,5 +103,23 @@ const filteredProducts = computed(() => {
       matchesMaxPrice
     )
   })
+})
+
+async function fetchProducts() {
+  loading.value = true
+  errorMessage.value = ''
+
+  try {
+    const data = await apiFetch('/products/list.php')
+    products.value = data.products
+  } catch (error) {
+    errorMessage.value = error.message
+  } finally {
+    loading.value = false
+  }
+}
+
+onMounted(() => {
+  fetchProducts()
 })
 </script>
