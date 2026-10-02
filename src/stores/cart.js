@@ -31,6 +31,22 @@ export const useCartStore = defineStore('cart', () => {
     })
   }
 
+  function increaseQuantity(productId) {
+    const item = items.value.find((item) => item.id === productId)
+
+    if (item) {
+      item.quantity++
+    }
+  }
+
+  function decreaseQuantity(productId) {
+    const item = items.value.find((item) => item.id === productId)
+
+    if (item && item.quantity > 1) {
+      item.quantity--
+    }
+  }
+
   function removeFromCart(productId) {
     items.value = items.value.filter(
       (item) => item.id !== productId
@@ -46,6 +62,8 @@ export const useCartStore = defineStore('cart', () => {
     totalItems,
     totalPrice,
     addToCart,
+    increaseQuantity,
+    decreaseQuantity,
     removeFromCart,
     clearCart
   }

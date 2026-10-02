@@ -15,7 +15,17 @@
 
         <p>{{ item.price }} FCFA</p>
 
-        <p>Quantité : {{ item.quantity }}</p>
+        <div>
+          <button @click="cartStore.decreaseQuantity(item.id)">
+            −
+          </button>
+
+          <span>{{ item.quantity }}</span>
+
+          <button @click="cartStore.increaseQuantity(item.id)">
+            +
+          </button>
+        </div>
 
         <button @click="cartStore.removeFromCart(item.id)">
           Retirer
