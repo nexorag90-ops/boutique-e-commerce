@@ -39,12 +39,69 @@
       <button @click="cartStore.clearCart">
         Vider le panier
       </button>
+
+      <button
+        @click="handleOrder"
+        :disabled="loading"
+      >
+        {{ loading ? 'Création...' : 'Passer la commande' }}
+      </button>
+
+      <p v-if="message">
+        {{ message }}
+      </p>
+
+      <p v-if="errorMessage">
+        {{ errorMessage }}
+      </p>
     </section>
   </main>
 </template>
 
 <script setup>
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { useCartStore } from '../stores/cart.js'
+import { useAuthStore } from '../stores/auth.js'
+import { apiFetch } from '../services/api.js'
 
+const router = useRouter()
 const cartStore = useCartStore()
+const authStore = useAuthStore()
+
+const loading = ref(false)
+const message = ref('')
+const errorMessage = ref('')
+
+async function handleOrder() {
+  message.value = ''
+  errorMessage.value = ''
+
+  if (!authStore.isAuthenticated) {
+    router.push('/login')
+    return
+  }
+
+  loading.value = true
+
+  try {
+    const items = cartStore.items.map((item) => ({
+      product_id: item.id,
+      quantity: item.quantity
+    }))
+
+    const data = await apiFetch('/orders/create.php', {
+      method: 'POST',
+      body: JSON.stringify({ items })
+    })
+
+    message.value = `Commande #${data.order_id} créée avec succès.`
+
+    cartStore.clearCart()
+  } catch (error) {
+    errorMessage.value = error.message
+  } finally {
+    loading.value = false
+  }
+}
 </script>

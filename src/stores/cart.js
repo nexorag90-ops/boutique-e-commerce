@@ -1,20 +1,34 @@
+
 import { defineStore } from 'pinia'
 import { computed, ref, watch } from 'vue'
 
 export const useCartStore = defineStore('cart', () => {
-  const savedCart = localStorage.getItem('cart')
+  const items = ref([])
 
-  const items = ref(savedCart ? JSON.parse(savedCart) : [])
+  function loadCart() {
+    const savedCart = localStorage.getItem('cart')
+
+    if (savedCart) {
+      try {
+        items.value = JSON.parse(savedCart)
+      } catch {
+        items.value = []
+      }
+    }
+  }
+
+  loadCart()
 
   const totalItems = computed(() => {
-    return items.value.reduce((total, item) => total + item.quantity, 0)
+    return items.value.reduce((total, item) => {
+      return total + item.quantity
+    }, 0)
   })
 
   const totalPrice = computed(() => {
-    return items.value.reduce(
-      (total, item) => total + item.price * item.quantity,
-      0
-    )
+    return items.value.reduce((total, item) => {
+      return total + item.price * item.quantity
+    }, 0)
   })
 
   function addToCart(product) {
@@ -34,7 +48,9 @@ export const useCartStore = defineStore('cart', () => {
   }
 
   function increaseQuantity(productId) {
-    const item = items.value.find((item) => item.id === productId)
+    const item = items.value.find(
+      (item) => item.id === productId
+    )
 
     if (item) {
       item.quantity++
@@ -42,7 +58,9 @@ export const useCartStore = defineStore('cart', () => {
   }
 
   function decreaseQuantity(productId) {
-    const item = items.value.find((item) => item.id === productId)
+    const item = items.value.find(
+      (item) => item.id === productId
+    )
 
     if (item && item.quantity > 1) {
       item.quantity--

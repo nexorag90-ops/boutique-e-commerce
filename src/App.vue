@@ -2,7 +2,11 @@
   <header>
     <nav>
       <RouterLink to="/">Accueil</RouterLink>
-      <RouterLink to="/products">Produits</RouterLink>
+
+      <RouterLink to="/products">
+        Produits
+      </RouterLink>
+
       <RouterLink to="/cart">
         Panier ({{ cartStore.totalItems }})
       </RouterLink>
@@ -18,6 +22,10 @@
       </template>
 
       <template v-else>
+        <RouterLink to="/orders">
+          Mes commandes
+        </RouterLink>
+
         <span>
           Bonjour {{ authStore.user.name }}
         </span>
@@ -48,7 +56,6 @@ onMounted(() => {
 
 async function handleLogout() {
   await authStore.logout()
-
   router.push('/')
 }
 </script>
