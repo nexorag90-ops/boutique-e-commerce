@@ -21,6 +21,20 @@
       </option>
     </select>
 
+    <input
+      v-model.number="minPrice"
+      type="number"
+      placeholder="Prix minimum"
+      min="0"
+    />
+
+    <input
+      v-model.number="maxPrice"
+      type="number"
+      placeholder="Prix maximum"
+      min="0"
+    />
+
     <section>
       <ProductCard
         v-for="product in filteredProducts"
@@ -42,6 +56,8 @@ import { products } from '../data/products.js'
 
 const search = ref('')
 const selectedCategory = ref('')
+const minPrice = ref(null)
+const maxPrice = ref(null)
 
 const categories = computed(() => {
   return [...new Set(products.map((product) => product.category))]
@@ -57,7 +73,22 @@ const filteredProducts = computed(() => {
       selectedCategory.value === '' ||
       product.category === selectedCategory.value
 
-    return matchesSearch && matchesCategory
+    const matchesMinPrice =
+      minPrice.value === null ||
+      minPrice.value === '' ||
+      product.price >= minPrice.value
+
+    const matchesMaxPrice =
+      maxPrice.value === null ||
+      maxPrice.value === '' ||
+      product.price <= maxPrice.value
+
+    return (
+      matchesSearch &&
+      matchesCategory &&
+      matchesMinPrice &&
+      matchesMaxPrice
+    )
   })
 })
 </script>
