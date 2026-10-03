@@ -1,6 +1,5 @@
 <template>
   <main class="mx-auto max-w-5xl">
-    <!-- CHARGEMENT -->
     <section
       v-if="loading"
       class="rounded-2xl bg-white p-10 text-center shadow-sm ring-1 ring-gray-200"
@@ -10,7 +9,6 @@
       </p>
     </section>
 
-    <!-- ERREUR -->
     <section
       v-else-if="errorMessage"
       class="rounded-2xl border border-red-200 bg-red-50 p-8 text-center"
@@ -24,17 +22,15 @@
       </p>
     </section>
 
-    <!-- PRODUIT -->
     <section
       v-else-if="product"
       class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-200"
     >
       <div class="grid gap-0 md:grid-cols-2">
-        <!-- IMAGE -->
         <div class="flex min-h-[320px] items-center justify-center bg-gray-100 p-6">
           <img
             v-if="product.image"
-            :src="`http://localhost:8000${product.image}`"
+            :src="product.image"
             :alt="product.name"
             class="max-h-[420px] w-full rounded-xl object-cover"
           />
@@ -47,9 +43,9 @@
           </p>
         </div>
 
-        <!-- INFORMATIONS -->
         <div class="flex flex-col justify-center p-8">
           <span
+            v-if="product.category"
             class="mb-4 w-fit rounded-full bg-indigo-100 px-3 py-1 text-sm font-medium text-indigo-700"
           >
             {{ product.category }}
@@ -69,7 +65,8 @@
 
           <button
             type="button"
-            class="mt-8 rounded-xl bg-indigo-600 px-6 py-3 font-semibold text-white transition hover:bg-indigo-700"
+            class="mt-8 rounded-xl bg-indigo-600 px-6 py-3 font-semibold text-white transition hover:bg-indigo-700 active:scale-95"
+            @click="cartStore.addToCart(product)"
           >
             Ajouter au panier
           </button>
@@ -77,7 +74,6 @@
       </div>
     </section>
 
-    <!-- PRODUIT INTROUVABLE -->
     <section
       v-else
       class="rounded-2xl bg-white p-10 text-center shadow-sm ring-1 ring-gray-200"
@@ -97,8 +93,10 @@
 import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { apiFetch } from '../services/api.js'
+import { useCartStore } from '../stores/cart.js'
 
 const route = useRoute()
+const cartStore = useCartStore()
 
 const product = ref(null)
 const loading = ref(false)
