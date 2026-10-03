@@ -1,4 +1,3 @@
-
 import { defineStore } from 'pinia'
 import { computed, ref, watch } from 'vue'
 
@@ -27,7 +26,7 @@ export const useCartStore = defineStore('cart', () => {
 
   const totalPrice = computed(() => {
     return items.value.reduce((total, item) => {
-      return total + item.price * item.quantity
+      return total + Number(item.price) * item.quantity
     }, 0)
   })
 

@@ -1,6 +1,5 @@
 <template>
   <main class="mx-auto max-w-5xl">
-    <!-- TITRE -->
     <section class="mb-8">
       <h1 class="text-3xl font-bold tracking-tight text-gray-900">
         Mon panier
@@ -11,14 +10,11 @@
       </p>
     </section>
 
-    <!-- PANIER VIDE -->
     <section
       v-if="cartStore.items.length === 0"
       class="rounded-2xl bg-white p-10 text-center shadow-sm ring-1 ring-gray-200"
     >
-      <div class="text-5xl">
-        🛒
-      </div>
+      <div class="text-5xl">🛒</div>
 
       <h2 class="mt-4 text-xl font-semibold text-gray-900">
         Votre panier est vide
@@ -36,66 +32,92 @@
       </RouterLink>
     </section>
 
-    <!-- PANIER -->
     <section
       v-else
       class="grid gap-6 lg:grid-cols-[1fr_320px]"
     >
-      <!-- ARTICLES -->
       <div class="space-y-4">
         <article
           v-for="item in cartStore.items"
           :key="item.id"
           class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-200"
         >
-          <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <!-- INFORMATIONS -->
-            <div>
-              <h2 class="text-lg font-semibold text-gray-900">
-                {{ item.name }}
-              </h2>
+          <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+            
+            <div class="flex items-center gap-4">
+              <div class="h-24 w-24 shrink-0 overflow-hidden rounded-xl bg-gray-100">
+                <img
+                  v-if="item.image"
+                  :src="item.image"
+                  :alt="item.name"
+                  class="h-full w-full object-cover"
+                />
 
-              <p class="mt-1 font-medium text-indigo-600">
-                {{ item.price }} FCFA
-              </p>
+                <div
+                  v-else
+                  class="flex h-full w-full items-center justify-center text-xs text-gray-400"
+                >
+                  Pas de photo
+                </div>
+              </div>
+
+              <div>
+                <h2 class="text-lg font-semibold text-gray-900">
+                  {{ item.name }}
+                </h2>
+
+                <p class="mt-1 font-medium text-indigo-600">
+                  {{ item.price }} FCFA
+
+                <p class="mt-1 text-sm text-gray-500">
+                  Sous-total : {{ Number(item.price) * item.quantity }} FCFA
+                </p>
+                </p>
+
+                <p
+                  v-if="item.category"
+                  class="mt-1 text-sm text-gray-500"
+                >
+                  {{ item.category }}
+                </p>
+              </div>
             </div>
 
-            <!-- QUANTITÉ -->
-            <div class="flex items-center gap-3">
+            <div class="flex flex-wrap items-center gap-4">
+              <div class="flex items-center gap-3">
+                <button
+                  type="button"
+                  class="flex h-9 w-9 items-center justify-center rounded-lg border border-gray-300 text-lg font-semibold text-gray-700 transition hover:bg-gray-100"
+                  @click="cartStore.decreaseQuantity(item.id)"
+                >
+                  −
+                </button>
+
+                <span class="min-w-8 text-center font-semibold text-gray-900">
+                  {{ item.quantity }}
+                </span>
+
+                <button
+                  type="button"
+                  class="flex h-9 w-9 items-center justify-center rounded-lg border border-gray-300 text-lg font-semibold text-gray-700 transition hover:bg-gray-100"
+                  @click="cartStore.increaseQuantity(item.id)"
+                >
+                  +
+                </button>
+              </div>
+
               <button
                 type="button"
-                class="flex h-9 w-9 items-center justify-center rounded-lg border border-gray-300 text-lg font-semibold text-gray-700 transition hover:bg-gray-100"
-                @click="cartStore.decreaseQuantity(item.id)"
+                class="text-sm font-medium text-red-600 transition hover:text-red-700"
+                @click="cartStore.removeFromCart(item.id)"
               >
-                −
-              </button>
-
-              <span class="min-w-8 text-center font-semibold text-gray-900">
-                {{ item.quantity }}
-              </span>
-
-              <button
-                type="button"
-                class="flex h-9 w-9 items-center justify-center rounded-lg border border-gray-300 text-lg font-semibold text-gray-700 transition hover:bg-gray-100"
-                @click="cartStore.increaseQuantity(item.id)"
-              >
-                +
+                Retirer
               </button>
             </div>
-
-            <!-- RETIRER -->
-            <button
-              type="button"
-              class="text-sm font-medium text-red-600 transition hover:text-red-700"
-              @click="cartStore.removeFromCart(item.id)"
-            >
-              Retirer
-            </button>
           </div>
         </article>
       </div>
 
-      <!-- RÉSUMÉ -->
       <aside
         class="h-fit rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-200 lg:sticky lg:top-6"
       >
@@ -104,9 +126,7 @@
         </h2>
 
         <div class="mt-5 flex items-center justify-between border-b border-gray-200 pb-4">
-          <span class="text-gray-600">
-            Articles
-          </span>
+          <span class="text-gray-600">Articles</span>
 
           <span class="font-medium text-gray-900">
             {{ cartStore.totalItems }}
@@ -140,7 +160,6 @@
           {{ loading ? 'Création...' : 'Passer la commande' }}
         </button>
 
-        <!-- SUCCÈS -->
         <p
           v-if="message"
           class="mt-4 rounded-lg bg-green-50 p-3 text-sm font-medium text-green-700"
@@ -148,7 +167,6 @@
           {{ message }}
         </p>
 
-        <!-- ERREUR -->
         <p
           v-if="errorMessage"
           class="mt-4 rounded-lg bg-red-50 p-3 text-sm font-medium text-red-700"
